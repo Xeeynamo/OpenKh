@@ -1,5 +1,4 @@
 using OpenKh.Imaging;
-using System;
 using System.Drawing;
 
 namespace OpenKh.Kh2
@@ -14,17 +13,17 @@ namespace OpenKh.Kh2
             bool isSwizzled)
         {
             Size = size;
-            format = GetFormat(pixelFormat);
-            swizzled = isSwizzled ? 7 : 3;
+            _format = GetFormat(pixelFormat);
+            _flags = 3 | (isSwizzled ? SwizzledFlag : 0);
 
             if (isSwizzled)
             {
-                switch (format)
+                switch (_format)
                 {
-                    case Format4bpp:
+                    case Tm2.GsPSM.GS_PSMT4:
                         Data = Swizzle4bpp(size, data);
                         break;
-                    case Format8bpp:
+                    case Tm2.GsPSM.GS_PSMT8:
                         Data = Swizzle8bpp(size, data);
                         break;
                     default:
@@ -37,12 +36,12 @@ namespace OpenKh.Kh2
                 Data = data;
             }
 
-            switch (format)
+            switch (_format)
             {
-                case Format4bpp:
+                case Tm2.GsPSM.GS_PSMT4:
                     Clut = GetKh2Clut4(clut);
                     break;
-                case Format8bpp:
+                case Tm2.GsPSM.GS_PSMT8:
                     Clut = GetKh2Clut8(clut);
                     break;
             }

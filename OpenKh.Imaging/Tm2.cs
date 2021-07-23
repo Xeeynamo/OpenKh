@@ -10,7 +10,7 @@ namespace OpenKh.Imaging
 {
     public class Tm2 : IImageRead
     {
-		private const uint MagicCode = 0x324D4954U;
+        private const uint MagicCode = 0x324D4954U;
         private const int Version = 4;
         private const int Format = 0;
         private const int HeaderLength = 16;
@@ -20,21 +20,21 @@ namespace OpenKh.Imaging
         /// Defines how pixel are arranged in each 32-bit word of local memory.
         /// </summary>
         public enum GsPSM
-		{
+        {
             /// <summary>
             /// RGBA32, uses 32-bit per pixel.
             /// </summary>
-			GS_PSMCT32 = 0,
+            GS_PSMCT32 = 0,
 
             /// <summary>
             /// RGB24, uses 24-bit per pixel with the upper 8 bit unused.
             /// </summary>
-			GS_PSMCT24 = 1,
+            GS_PSMCT24 = 1,
 
             /// <summary>
             /// RGBA16, pack two pixels in 32-bit in little endian order.
             /// </summary>
-			GS_PSMCT16 = 2,
+            GS_PSMCT16 = 2,
 
             /// <summary>
             /// RGBA16, pack two pixels in 32-bit in little endian order.
@@ -44,37 +44,37 @@ namespace OpenKh.Imaging
             /// <summary>
             /// 8-bit indexed, packing 4 pixels per 32-bit.
             /// </summary>
-			GS_PSMT8 = 19,
+            GS_PSMT8 = 19,
 
             /// <summary>
             /// 4-bit indexed, packing 8 pixels per 32-bit.
             /// </summary>
-			GS_PSMT4 = 20,
+            GS_PSMT4 = 20,
 
             /// <summary>
             /// 8-bit indexed, but the upper 24-bit are unused.
             /// </summary>
-			GS_PSMT8H = 27,
+            GS_PSMT8H = 27,
 
             /// <summary>
             /// 4-bit indexed, but the upper 24-bit are unused.
             /// </summary>
-			GS_PSMT4HL = 36,
+            GS_PSMT4HL = 36,
 
             /// <summary>
             /// 4-bit indexed, where the bits 4-7 are evaluated and the rest discarded.
             /// </summary>
-			GS_PSMT4HH = 44,
+            GS_PSMT4HH = 44,
 
             /// <summary>
             /// 32-bit Z buffer
             /// </summary>
-			GS_PSMZ32 = 48,
+            GS_PSMZ32 = 48,
 
             /// <summary>
             /// 24-bit Z buffer with the upper 8-bit unused
             /// </summary>
-			GS_PSMZ24 = 49,
+            GS_PSMZ24 = 49,
 
             /// <summary>
             /// 16-bit Z buffer, pack two pixels in 32-bit in little endian order.
@@ -84,50 +84,50 @@ namespace OpenKh.Imaging
             /// <summary>
             /// 16-bit Z buffer, pack two pixels in 32-bit in little endian order.
             /// </summary>
-			GS_PSMZ16S = 58,
-		};
+            GS_PSMZ16S = 58,
+        };
 
-		public enum GsCPSM
-		{
-			GS_PSMCT32 = 0, // 32bit RGBA
-			GS_PSMCT24 = 1,
-			GS_PSMCT16 = 2,
-			GS_PSMCT16S = 10,
-		}
+        public enum GsCPSM
+        {
+            GS_PSMCT32 = 0, // 32bit RGBA
+            GS_PSMCT24 = 1,
+            GS_PSMCT16 = 2,
+            GS_PSMCT16S = 10,
+        }
 
-		private enum IMG_TYPE
-		{
-			IT_RGBA = 3,
-			IT_CLUT4 = 4,
-			IT_CLUT8 = 5,
-		};
+        public enum IMG_TYPE
+        {
+            IT_RGBA = 3,
+            IT_CLUT4 = 4,
+            IT_CLUT8 = 5,
+        };
 
-		private enum CLT_TYPE
-		{
-			CT_A1BGR5 = 1,
-			CT_XBGR8 = 2,
-			CT_ABGR8 = 3,
-		};
+        public enum CLT_TYPE
+        {
+            CT_A1BGR5 = 1,
+            CT_XBGR8 = 2,
+            CT_ABGR8 = 3,
+        };
 
-		/// <summary>
-		/// register for image
-		/// 14 bit, texture buffer base pointer (address / 256)
-		/// 6 bit, texture buffer width (texels / 64)
-		/// 6 bit, pixel storage format (0 = 32bit RGBA)
-		/// 4 bit, width 2^n
-		/// 4 bit, height 2^n
-		/// 1 bit, 0 = RGB, 1 = RGBA
-		/// 2 bit, texture function (0=modulate, 1=decal, 2=hilight, 3=hilight2)
-		/// 14 bit, CLUT buffer base pointer (address / 256)
-		/// 4 bit, CLUT storage format
-		/// 1 bit, storage mode
-		/// 5 bit, offset
-		/// 3 bit, load control
-		///     
-		/// http://forum.xentax.com/viewtopic.php?f=16&t=4501&start=75
-		/// </summary>
-		public class GsTex
-		{
+        /// <summary>
+        /// register for image
+        /// 14 bit, texture buffer base pointer (address / 256)
+        /// 6 bit, texture buffer width (texels / 64)
+        /// 6 bit, pixel storage format (0 = 32bit RGBA)
+        /// 4 bit, width 2^n
+        /// 4 bit, height 2^n
+        /// 1 bit, 0 = RGB, 1 = RGBA
+        /// 2 bit, texture function (0=modulate, 1=decal, 2=hilight, 3=hilight2)
+        /// 14 bit, CLUT buffer base pointer (address / 256)
+        /// 4 bit, CLUT storage format
+        /// 1 bit, storage mode
+        /// 5 bit, offset
+        /// 3 bit, load control
+        ///     
+        /// http://forum.xentax.com/viewtopic.php?f=16&t=4501&start=75
+        /// </summary>
+        public class GsTex
+        {
             public GsTex()
             {
 
@@ -150,7 +150,7 @@ namespace OpenKh.Imaging
             /// <summary>
             /// Texture Base Pointer.
             /// </summary>
-			public int TBP0
+            public int TBP0
             {
                 get => GetBits(Data, 0, 14);
                 set => Data = SetBits(Data, 0, 14, value);
@@ -159,7 +159,7 @@ namespace OpenKh.Imaging
             /// <summary>
             /// Texture Buffer Width.
             /// </summary>
-			public int TBW
+            public int TBW
             {
                 get => GetBits(Data, 14, 6);
                 set => Data = SetBits(Data, 14, 6, value);
@@ -169,16 +169,16 @@ namespace OpenKh.Imaging
             /// Pixel Storage Mode.
             /// Tells what is the format used to store the individual pixels.
             /// </summary>
-			public GsPSM PSM
-			{
-				get => (GsPSM)GetBits(Data, 20, 6);
-				set => Data = SetBits(Data, 20, 6, (int)value);
-			}
+            public GsPSM PSM
+            {
+                get => (GsPSM)GetBits(Data, 20, 6);
+                set => Data = SetBits(Data, 20, 6, (int)value);
+            }
 
             /// <summary>
             /// Texture Width; power of 2.
             /// </summary>
-			public int TW
+            public int TW
             {
                 get => GetBits(Data, 26, 4);
                 set => Data = SetBits(Data, 26, 4, value);
@@ -193,9 +193,9 @@ namespace OpenKh.Imaging
                 set => Data = SetBits(Data, 30, 4, value);
             }
 
-			public bool TCC
-			{
-				get => GetBit(Data, 34);
+            public bool TCC
+            {
+                get => GetBit(Data, 34);
                 set => Data = SetBit(Data, 34, value);
 
             }
@@ -203,7 +203,7 @@ namespace OpenKh.Imaging
             /// <summary>
             /// Texture Function
             /// </summary>
-			public int TFX
+            public int TFX
             {
                 get => GetBits(Data, 35, 2);
                 set => Data = SetBits(Data, 35, 2, value);
@@ -212,7 +212,7 @@ namespace OpenKh.Imaging
             /// <summary>
             /// Clut Base Pointer
             /// </summary>
-			public int CBP
+            public int CBP
             {
                 get => GetBits(Data, 37, 14);
                 set => Data = SetBits(Data, 37, 14, value);
@@ -221,7 +221,7 @@ namespace OpenKh.Imaging
             /// <summary>
             /// Clut Pixel Storage mode
             /// </summary>
-			public GsCPSM CPSM
+            public GsCPSM CPSM
             {
                 get => (GsCPSM)GetBits(Data, 51, 4);
                 set => Data = SetBits(Data, 51, 4, (int)value);
@@ -233,7 +233,7 @@ namespace OpenKh.Imaging
             /// false: store CLUT using CSM1, which swizzled the data every 8 colours.
             /// true: store CLUT using CSM2, which is linear but slower.
             /// </summary>
-			public bool CSM
+            public bool CSM
             {
                 get => GetBit(Data, 55);
                 set => Data = SetBit(Data, 55, value);
@@ -242,7 +242,7 @@ namespace OpenKh.Imaging
             /// <summary>
             /// Clut Entry Offset
             /// </summary>
-			public int CSA
+            public int CSA
             {
                 get => GetBits(Data, 56, 5);
                 set => Data = SetBits(Data, 56, 5, value);
@@ -251,7 +251,7 @@ namespace OpenKh.Imaging
             /// <summary>
             /// Clut Buffer Load Control
             /// </summary>
-			public int CLD
+            public int CLD
             {
                 get => GetBits(Data, 61, 3);
                 set => Data = SetBits(Data, 61, 3, value);
@@ -268,23 +268,23 @@ namespace OpenKh.Imaging
         }
 
         private class Picture
-		{
-			[Data] public int TotalSize { get; set; }
-			[Data] public int ClutSize { get; set; }
-			[Data] public int ImageSize { get; set; }
-			[Data] public short HeaderSize { get; set; }
-			[Data] public short ClutColorCount { get; set; }
+        {
+            [Data] public int TotalSize { get; set; }
+            [Data] public int ClutSize { get; set; }
+            [Data] public int ImageSize { get; set; }
+            [Data] public short HeaderSize { get; set; }
+            [Data] public short ClutColorCount { get; set; }
             [Data] public byte PictureFormat { get; set; }
             [Data] public byte MipMapCount { get; set; }
-			[Data] public byte ClutType { get; set; }
-			[Data] public byte ImageType { get; set; }
-			[Data] public short Width { get; set; }
-			[Data] public short Height { get; set; }
-			[Data] public GsTex GsTex0 { get; set; }
-			[Data] public GsTex GsTex1 { get; set; }
-			[Data] public int GsRegs { get; set; }
-			[Data] public int GsClut { get; set; }
-		};
+            [Data] public byte ClutType { get; set; }
+            [Data] public byte ImageType { get; set; }
+            [Data] public short Width { get; set; }
+            [Data] public short Height { get; set; }
+            [Data] public GsTex GsTex0 { get; set; }
+            [Data] public GsTex GsTex1 { get; set; }
+            [Data] public int GsRegs { get; set; }
+            [Data] public int GsClut { get; set; }
+        };
 
         private class MipMap
         {
@@ -304,7 +304,7 @@ namespace OpenKh.Imaging
         private readonly int _gsReg;
         private readonly int _gsPal;
         private readonly byte[] _imageData;
-		private readonly byte[] _clutData;
+        private readonly byte[] _clutData;
         private readonly MipMap _mipmap;
         private bool IsClutSwizzled => (_clutType & 0x80) == 0;
 
@@ -313,7 +313,7 @@ namespace OpenKh.Imaging
         public PixelFormat ClutFormat => GetPixelFormat(_clutType & 7);
 
         private Tm2(Stream stream, Picture picture)
-		{
+        {
             _imageFormat = picture.PictureFormat;
             _mipMapCount = picture.MipMapCount;
             _imageType = picture.ImageType;

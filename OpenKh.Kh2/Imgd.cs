@@ -1,4 +1,4 @@
-﻿using OpenKh.Common;
+using OpenKh.Common;
 using OpenKh.Imaging;
 using System;
 using System.Collections.Generic;
@@ -6,15 +6,16 @@ using System.Drawing;
 using System.IO;
 using Xe.BinaryMapper;
 using Xe.IO;
+using static OpenKh.Imaging.Tm2;
 
 namespace OpenKh.Kh2
 {
     public partial class Imgd : IImageRead
-	{
+    {
         private class Header
         {
             [Data] public uint MagicCode { get; set; }
-            [Data] public int Unk04 { get; set; }
+            [Data] public int Version { get; set; }
             [Data] public int BitmapOffset { get; set; }
             [Data] public int BitmapLength { get; set; }
             [Data] public int ClutOffset { get; set; }
@@ -25,37 +26,32 @@ namespace OpenKh.Kh2
             [Data] public short PowWidth { get; set; }
             [Data] public short PowHeight { get; set; }
             [Data] public short WidthDiv64 { get; set; }
-            [Data] public short Format { get; set; }
+            [Data] public ushort GsPsm { get; set; }
             [Data] public int Unk28 { get; set; }
-            [Data] public short Unk2c { get; set; }
-            [Data] public short Unk2e { get; set; }
+            [Data] public ushort ClutWidth { get; set; }
+            [Data] public ushort ClutHeight { get; set; }
             [Data] public short Unk30 { get; set; }
-            [Data] public short Unk32 { get; set; }
-            [Data] public short Unk34 { get; set; }
-            [Data] public short Unk36 { get; set; }
-            [Data] public int Unk38 { get; set; }
-            [Data] public int Swizzled { get; set; }
+            [Data] public ushort ClutFormat { get; set; }
+            [Data] public ushort ImageType { get; set; }
+            [Data] public ushort ClutType { get; set; }
+            [Data] public int Reserved { get; set; }
+            [Data] public int Flags { get; set; }
         }
 
-		private const uint MagicCode = 0x44474D49U;
+        private const uint MagicCode = 0x44474D49U;
         private const int HeaderLength = 0x40;
-        private const short Format32bpp = 0x00;
-        private const short Format8bpp = 0x13;
-        private const short Format4bpp = 0x14;
-        private const short SubFormat32bpp = 3;
-        private const short SubFormat8bpp = 5;
-        private const short SubFormat4bpp = 4;
+        private const int SwizzledFlag = 4;
         private const int FacAlignment = 0x800;
         private static readonly InvalidDataException InvalidHeaderException = new InvalidDataException("Invalid header");
 
         public static bool IsValid(Stream stream) =>
             stream.Length >= HeaderLength && stream.SetPosition(0).ReadInt32() == MagicCode;
 
-        private readonly short format;
-        private readonly int swizzled;
+        private readonly GsPSM _format;
+        private readonly int _flags;
 
-		private Imgd(Stream stream)
-		{
+        private Imgd(Stream stream)
+        {
             stream
                 .MustReadAndSeek()
                 .MustHaveHeaderLengthOf(HeaderLength);
@@ -66,14 +62,14 @@ namespace OpenKh.Kh2
                 throw InvalidHeaderException;
 
             Size = new Size(header.Width, header.Height);
-            format = header.Format;
-            swizzled = header.Swizzled;
+            _format = (GsPSM)header.GsPsm;
+            _flags = header.Flags;
 
             stream.SetPosition(header.BitmapOffset);
             var data = reader.ReadBytes(header.BitmapLength);
 
             // Swap pixel order for only unswizzled 4-bpp IMGD.
-            Data = (format == Format4bpp && (swizzled & 4) == 0)
+            Data = (_format == GsPSM.GS_PSMT4 && (_flags & SwizzledFlag) == 0)
                 ? GetSwappedPixelData(data)
                 : data;
 
@@ -84,13 +80,13 @@ namespace OpenKh.Kh2
         public static Imgd Read(Stream stream) => new Imgd(stream.SetPosition(0));
 
         public void Write(Stream stream)
-		{
+        {
             stream.MustWriteAndSeek();
 
             BinaryMapping.WriteObject(stream, new Header
             {
                 MagicCode = MagicCode,
-                Unk04 = 0x100,
+                Version = 0x100,
                 BitmapOffset = HeaderLength,
                 BitmapLength = Data.Length,
                 ClutOffset = HeaderLength + Data.Length,
@@ -101,20 +97,20 @@ namespace OpenKh.Kh2
                 PowWidth = GetPow(Size.Width),
                 PowHeight = GetPow(Size.Height),
                 WidthDiv64 = (short)(Size.Width / 64),
-                Format = format,
+                GsPsm = (ushort)_format,
                 Unk28 = -1,
-                Unk2c = (short)(format == Format4bpp ? 8 : 16),
-                Unk2e = (short)(format == Format4bpp ? 2 : 16),
+                ClutWidth = (ushort)(_format == GsPSM.GS_PSMT4 ? 8 : 16),
+                ClutHeight = (ushort)(_format == GsPSM.GS_PSMT4 ? 2 : 16),
                 Unk30 = 1,
-                Unk32 = (short)(format == Format32bpp ? 19 : 0),
-                Unk34 = GetSubFormat(format),
-                Unk36 = (short)(format == Format32bpp ? 0 : 3),
-                Unk38 = 0,
-                Swizzled = swizzled,
+                ClutFormat = (ushort)(_format == GsPSM.GS_PSMCT32 ? (GsCPSM)19: GsCPSM.GS_PSMCT32),
+                ImageType = (ushort)GetImageType(_format),
+                ClutType = (ushort)(_format == GsPSM.GS_PSMCT32 ? 0 : CLT_TYPE.CT_ABGR8),
+                Reserved = 0,
+                Flags = _flags,
             });
 
             // Swap pixel order for only unswizzled 4-bpp IMGD.
-            var data = (format == Format4bpp && (swizzled & 4) == 0)
+            var data = (_format == GsPSM.GS_PSMT4 && (_flags & SwizzledFlag) == 0)
                 ? GetSwappedPixelData(Data)
                 : Data;
 
@@ -185,37 +181,37 @@ namespace OpenKh.Kh2
         /// In IMGD file:
         /// - NOT IsSwizzled && Format4bpp = storing reversed pixel order ([1, 2] to 0x21)
         /// </remarks>
-		public byte[] Data { get; }
+        public byte[] Data { get; }
 
         public byte[] Clut { get; }
 
-        public bool IsSwizzled => (swizzled & 4) != 0;
+        public bool IsSwizzled => (_flags & 4) != 0;
 
-        public PixelFormat PixelFormat => GetPixelFormat(format);
+        public PixelFormat PixelFormat => GetPixelFormat(_format);
 
         public byte[] GetData()
-		{
-			switch (format)
+        {
+            switch (_format)
             {
-                case Format32bpp:
+                case GsPSM.GS_PSMCT32:
                     return GetData32bpp();
-                case Format8bpp:
+                case GsPSM.GS_PSMT8:
                     return IsSwizzled ? Ps2.Decode8(Ps2.Encode32(Data, Size.Width / 128, Size.Height / 64), Size.Width / 128, Size.Height / 64) : Data;
-                case Format4bpp:
-					return IsSwizzled ? Ps2.Decode4(Ps2.Encode32(Data, Size.Width / 128, Size.Height / 128), Size.Width / 128, Size.Height / 128) : Data;
-				default:
-					throw new NotSupportedException($"The format {format} is not supported.");
-			}
+                case GsPSM.GS_PSMT4:
+                    return IsSwizzled ? Ps2.Decode4(Ps2.Encode32(Data, Size.Width / 128, Size.Height / 128), Size.Width / 128, Size.Height / 128) : Data;
+                default:
+                    throw new NotSupportedException($"The format {_format} is not supported.");
+            }
         }
 
         public byte[] GetClut()
         {
-            switch (format)
+            switch (_format)
             {
-                case Format8bpp: return GetClut8();
-                case Format4bpp: return GetClut4();
+                case GsPSM.GS_PSMT8: return GetClut8();
+                case GsPSM.GS_PSMT4: return GetClut4();
                 default:
-                    throw new NotSupportedException($"The format {format} is not supported or does not contain any palette.");
+                    throw new NotSupportedException($"The format {_format} is not supported or does not contain any palette.");
             }
         }
 
@@ -274,41 +270,39 @@ namespace OpenKh.Kh2
             return pow;
         }
 
-        private static PixelFormat GetPixelFormat(int format)
+        private static PixelFormat GetPixelFormat(GsPSM format)
         {
             switch (format)
             {
-                case Format32bpp: return PixelFormat.Rgba8888;
-                case Format8bpp: return PixelFormat.Indexed8;
-                case Format4bpp: return PixelFormat.Indexed4;
+                case GsPSM.GS_PSMCT32: return PixelFormat.Rgba8888;
+                case GsPSM.GS_PSMT8: return PixelFormat.Indexed8;
+                case GsPSM.GS_PSMT4: return PixelFormat.Indexed4;
                 default: return PixelFormat.Undefined;
             }
         }
 
-        private static short GetFormat(PixelFormat pixelFormat)
+        private static GsPSM GetFormat(PixelFormat pixelFormat)
         {
             switch (pixelFormat)
             {
-                case PixelFormat.Rgba8888: return Format32bpp;
-                case PixelFormat.Indexed4: return Format4bpp;
-                case PixelFormat.Indexed8: return Format8bpp;
+                case PixelFormat.Rgba8888: return GsPSM.GS_PSMCT32;
+                case PixelFormat.Indexed4: return GsPSM.GS_PSMT4;
+                case PixelFormat.Indexed8: return GsPSM.GS_PSMT8;
                 default:
                     throw new ArgumentOutOfRangeException(
                         $"Pixel format {pixelFormat} is not supported.");
             }
         }
 
-        private static short GetSubFormat(short format)
+        private static IMG_TYPE GetImageType(GsPSM format)
         {
-            switch (format)
+            return format switch
             {
-                case Format32bpp: return SubFormat32bpp;
-                case Format4bpp: return SubFormat4bpp;
-                case Format8bpp: return SubFormat8bpp;
-                default:
-                    throw new ArgumentOutOfRangeException(
-                        $"Format {format} is not supported.");
-            }
+                GsPSM.GS_PSMCT32 => IMG_TYPE.IT_RGBA,
+                GsPSM.GS_PSMT4 => IMG_TYPE.IT_CLUT4,
+                GsPSM.GS_PSMT8 => IMG_TYPE.IT_CLUT8,
+                _ => throw new ArgumentOutOfRangeException($"Format {format} is not supported."),
+            };
         }
     }
 }
