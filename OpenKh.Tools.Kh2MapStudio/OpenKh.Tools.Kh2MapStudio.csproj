@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net5.0-windows</TargetFramework>
+		<TargetFrameworks>net5.0-windows;net6.0-windows</TargetFrameworks>
         <LangVersion>latest</LangVersion>
 		<AssemblyTitle>KH2 Map Studio</AssemblyTitle>
 		<Product>KH2 Map Studio - OpenKh</Product>
