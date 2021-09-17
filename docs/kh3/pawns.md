@@ -84,6 +84,7 @@ Some maps overrides the pawn path contained in the save data, loading an hard co
 | n_ex016 | Evan
 | n_ex017 | Aeleus
 | n_ex018 | Ienzo
+| n_ex023 | Sora (KH3)
 | n_ex024 | Eraqus
 | n_ex028 | Moogle (With Balloon)
 | n_ex029 | Lingering Will
