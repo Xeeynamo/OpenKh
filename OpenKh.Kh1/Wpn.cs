@@ -18,71 +18,65 @@ namespace OpenKh.Kh1
 
         public Wpn(string filepath)
         {
-            int imageCount = 0;
-            using (FileStream stream = new FileStream(filepath, FileMode.Open))
+            var imageCount = 0;
+            using var stream = new FileStream(filepath, FileMode.Open);
+            // Header
+            Header = BinaryMapping.ReadObject<WpnHeader>(stream);
+
+            //Reserved (16 * 7 bytes)
+
+            // Main file - Unknown data - Read MainFile for some info
+            //stream.Position = Header.MainOffset;
+
+            // Model Environment
+            stream.Position = Header.MenvOffset;
+            ModelEnvFile = new MenvFile();
+            ModelEnvFile.MenvHeader = BinaryMapping.ReadObject<MenvModelHeader>(stream);
+            var meshListPointer = stream.Position;
+            ModelEnvFile.ModelHeader = BinaryMapping.ReadObject<MdlsModelHeader>(stream);
+
+            for(var i = 0; i < ModelEnvFile.ModelHeader.MeshCount; i++)
             {
-                // Header
-                Header = BinaryMapping.ReadObject<WpnHeader>(stream);
-
-                //Reserved (16 * 7 bytes)
-
-                // Main file - Unknown data - Read MainFile for some info
-                //stream.Position = Header.MainOffset;
-
-                // Model Environment
-                stream.Position = Header.MenvOffset;
-                ModelEnvFile = new MenvFile();
-                ModelEnvFile.MenvHeader = BinaryMapping.ReadObject<MenvModelHeader>(stream);
-                long meshListPointer = stream.Position;
-                ModelEnvFile.ModelHeader = BinaryMapping.ReadObject<MdlsModelHeader>(stream);
-
-                for(int i = 0; i < ModelEnvFile.ModelHeader.MeshCount; i++)
-                {
-                    MdlsMesh mesh = new MdlsMesh();
-                    mesh.Header = BinaryMapping.ReadObject<MdlsMeshHeader>(stream);
-                    ModelEnvFile.Meshes.Add(mesh);
-                }
-
-                for (int i = 0; i < ModelEnvFile.ModelHeader.MeshCount; i++)
-                {
-                    MdlsMesh mesh = ModelEnvFile.Meshes[i];
-                    stream.Position = meshListPointer + mesh.Header.MeshPacketOffset;
-
-                    long nextOffset = Header.MenvOffset + ModelEnvFile.MenvHeader.UnkOffset;
-                    if (i + 1 < ModelEnvFile.ModelHeader.MeshCount)
-                        nextOffset = meshListPointer + ModelEnvFile.Meshes[i + 1].Header.MeshPacketOffset;
-                    long packetSize = nextOffset - stream.Position;
-
-                    mesh.packet = new MdlsMeshPacket();
-                    mesh.packet.RawData = stream.ReadBytes((int)packetSize);
-                    mesh.packet.UnpackData();
-                }
-
-                // Textures
-                Images = new List<MdlsImage>();
-                imageCount = ModelEnvFile.MenvHeader.TextureInfoSize / 0x10;
-                stream.Position = Header.MenvOffset + ModelEnvFile.MenvHeader.TextureInfoOffset;
-                for (int i = 0; i < imageCount; i++)
-                {
-                    MdlsImage image = new MdlsImage();
-                    image.Info = BinaryMapping.ReadObject<MdlsImage.MdlsImageInfo>(stream);
-                    Images.Add(image);
-                }
-                stream.Position = Header.MenvOffset + ModelEnvFile.MenvHeader.TextureDataOffset;
-                for (int i = 0; i < imageCount; i++)
-                {
-                    int imageDataLength = Images[i].Info.Width * Images[i].Info.Height;
-                    Images[i].Data = stream.ReadBytes(imageDataLength);
-                }
-                for (int i = 0; i < imageCount; i++)
-                {
-                    Images[i].Clut = stream.ReadBytes(CLUT_SIZE);
-                }
-                for (int i = 0; i < imageCount; i++)
-                {
-                    Images[i].loadBitmap();
-                }
+                var mesh = new MdlsMesh();
+                mesh.Header = BinaryMapping.ReadObject<MdlsMeshHeader>(stream);
+                ModelEnvFile.Meshes.Add(mesh);
             }
+
+            for (var i = 0; i < ModelEnvFile.ModelHeader.MeshCount; i++)
+            {
+                var mesh = ModelEnvFile.Meshes[i];
+                stream.Position = meshListPointer + mesh.Header.MeshPacketOffset;
+
+                long nextOffset = Header.MenvOffset + ModelEnvFile.MenvHeader.UnkOffset;
+                if (i + 1 < ModelEnvFile.ModelHeader.MeshCount)
+                    nextOffset = meshListPointer + ModelEnvFile.Meshes[i + 1].Header.MeshPacketOffset;
+                var packetSize = nextOffset - stream.Position;
+
+                mesh.packet = new MdlsMeshPacket();
+                mesh.packet.RawData = stream.ReadBytes((int)packetSize);
+                mesh.packet.UnpackData();
+            }
+
+            // Textures
+            Images = [];
+            imageCount = ModelEnvFile.MenvHeader.TextureInfoSize / 0x10;
+            stream.Position = Header.MenvOffset + ModelEnvFile.MenvHeader.TextureInfoOffset;
+            for (var i = 0; i < imageCount; i++)
+            {
+                var image = new MdlsImage
+                {
+                    Info = BinaryMapping.ReadObject<MdlsImage.MdlsImageInfo>(stream),
+                };
+                Images.Add(image);
+            }
+            stream.Position = Header.MenvOffset + ModelEnvFile.MenvHeader.TextureDataOffset;
+            for (var i = 0; i < imageCount; i++)
+            {
+                var imageDataLength = Images[i].Info.Width * Images[i].Info.Height;
+                Images[i].Data = stream.ReadBytes(imageDataLength);
+            }
+            for (var i = 0; i < imageCount; i++) Images[i].Clut = stream.ReadBytes(CLUT_SIZE);
+            for (var i = 0; i < imageCount; i++) Images[i].loadBitmap();
         }
 
         public class WpnHeader
@@ -117,10 +111,7 @@ namespace OpenKh.Kh1
             public MdlsModelHeader ModelHeader { get; set; }
             public List<MdlsMesh> Meshes { get; set; }
 
-            public MenvFile()
-            {
-                Meshes = new List<MdlsMesh>();
-            }
+            public MenvFile() => Meshes = [];
 
             public class MenvModelHeader
             {

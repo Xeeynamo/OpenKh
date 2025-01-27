@@ -61,7 +61,7 @@ Stored straight after the model [header](#header).
 | 0x0e   | uint8 | Unknown
 | 0x0f   | uint8 | Unknown
 
-UVSC option:
+[UVSC option](raw-texture.md#uvsc-uv-scroll):
 
 | Bit | Description |
 |-----|-------------|

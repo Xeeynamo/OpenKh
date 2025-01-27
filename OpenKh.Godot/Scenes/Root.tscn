@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://def10rjbmb04j"]
+
+[ext_resource type="PackedScene" uid="uid://pdwj5kona0kg" path="res://Scenes/Tools/Launcher/Launcher.tscn" id="1_aoyju"]
+
+[node name="Root" type="Node"]
+
+[node name="Launcher" parent="." instance=ExtResource("1_aoyju")]

@@ -1,0 +1,50 @@
+[gd_scene load_steps=2 format=3 uid="uid://cv6fpnmhhenwc"]
+
+[ext_resource type="Script" path="res://Tools/Launcher/GameConfigurator.cs" id="1_1ntx0"]
+
+[node name="GameConfigurator" type="PanelContainer" node_paths=PackedStringArray("PlatformSelector", "ManualPath", "PathOpen", "Label")]
+script = ExtResource("1_1ntx0")
+PlatformSelector = NodePath("MarginContainer/VBoxContainer/PlatformHbox/Platform")
+ManualPath = NodePath("MarginContainer/VBoxContainer/PathHBox/LineEdit")
+PathOpen = NodePath("MarginContainer/VBoxContainer/PathHBox/Button")
+Label = NodePath("MarginContainer/VBoxContainer/Label")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "GameTitle"
+horizontal_alignment = 1
+
+[node name="PlatformHbox" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="PlatformLabel" type="Label" parent="MarginContainer/VBoxContainer/PlatformHbox"]
+layout_mode = 2
+text = "Platform"
+
+[node name="Platform" type="OptionButton" parent="MarginContainer/VBoxContainer/PlatformHbox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PathHBox" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="MarginContainer/VBoxContainer/PathHBox"]
+layout_mode = 2
+text = "Open Path"
+
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/PathHBox"]
+custom_minimum_size = Vector2(192, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "path goes here..."

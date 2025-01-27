@@ -1,0 +1,49 @@
+[gd_scene load_steps=3 format=3 uid="uid://dw36qbiajqif2"]
+
+[ext_resource type="Script" path="res://Tools/MsadpcmCache/MsadpcmCacheRoot.cs" id="1_7pq5l"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_p32hr"]
+font_size = 32
+
+[node name="MsadpcmCacheRoot" type="PanelContainer" node_paths=PackedStringArray("DisplayLabel", "StartButton")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_7pq5l")
+DisplayLabel = NodePath("VBoxContainer/VBoxContainer/ProgressLabel")
+StartButton = NodePath("VBoxContainer/VBoxContainer/Button")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "MsadpcmCache"
+label_settings = SubResource("LabelSettings_p32hr")
+horizontal_alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+alignment = 1
+
+[node name="Label" type="Label" parent="VBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "Kingdom Hearts uses MSADPCM WAV files in some instances for audio playback
+Godot does not support MSADPCM, but it can be converted to a format that Godot can use via FFMpeg
+This conversion process only needs to happen once, but takes a noticable amount of time
+This tool loads all sounds from every game to ensure every WAV file is converted and cached"
+horizontal_alignment = 1
+
+[node name="Button" type="Button" parent="VBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 32
+text = "Start"
+
+[node name="ProgressLabel" type="Label" parent="VBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "test"
+horizontal_alignment = 1

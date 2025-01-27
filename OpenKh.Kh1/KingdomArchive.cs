@@ -53,7 +53,7 @@ namespace OpenKh.Kh1
             stream.Write(entries.Count);
 
             var accumulator = (entries.Count + 2) * 4;
-            foreach (var entry in entries)
+            foreach (var entry in entries) //unused?
             {
                 accumulator = Helpers.Align(accumulator, Alignment);
                 stream.Write(accumulator);

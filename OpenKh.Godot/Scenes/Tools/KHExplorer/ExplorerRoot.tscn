@@ -1,0 +1,87 @@
+[gd_scene load_steps=2 format=3 uid="uid://bt5kr0h3y274a"]
+
+[ext_resource type="Script" path="res://Tools/KHExplorer/KHExplorerRoot.cs" id="1_3qpc6"]
+
+[node name="ExplorerRoot" type="PanelContainer" node_paths=PackedStringArray("FileTree", "PreviewArea", "AudioPlayer", "GameSelector", "SearchBar", "FileNameDisplay")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_3qpc6")
+FileTree = NodePath("HBoxContainer/HSplitContainer/VBoxContainer/Tree")
+PreviewArea = NodePath("HBoxContainer/HSplitContainer/VBoxContainer2/ScrollContainer/PanelContainer")
+AudioPlayer = NodePath("AudioStreamPlayer")
+GameSelector = NodePath("HBoxContainer/HSplitContainer/VBoxContainer/HBoxContainer/HBoxContainer2/OptionButton")
+SearchBar = NodePath("HBoxContainer/HSplitContainer/VBoxContainer/HBoxContainer/SearchBar")
+FileNameDisplay = NodePath("HBoxContainer/HSplitContainer/VBoxContainer2/FileNameLabel")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="HSplitContainer" type="HSplitContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/HSplitContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/HSplitContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HBoxContainer/HSplitContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = " KHExplorer"
+horizontal_alignment = 1
+
+[node name="VSeparator" type="VSeparator" parent="HBoxContainer/HSplitContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="SearchBar" type="LineEdit" parent="HBoxContainer/HSplitContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Search..."
+clear_button_enabled = true
+
+[node name="VSeparator2" type="VSeparator" parent="HBoxContainer/HSplitContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="HBoxContainer/HSplitContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="HBoxContainer/HSplitContainer/VBoxContainer/HBoxContainer/HBoxContainer2"]
+layout_mode = 2
+text = "Game: "
+
+[node name="OptionButton" type="OptionButton" parent="HBoxContainer/HSplitContainer/VBoxContainer/HBoxContainer/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Tree" type="Tree" parent="HBoxContainer/HSplitContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="HBoxContainer/HSplitContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="FileNameLabel" type="Label" parent="HBoxContainer/HSplitContainer/VBoxContainer2"]
+layout_mode = 2
+text = "---"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="HBoxContainer/HSplitContainer/VBoxContainer2"]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/HSplitContainer/VBoxContainer2"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PanelContainer" type="PanelContainer" parent="HBoxContainer/HSplitContainer/VBoxContainer2/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]

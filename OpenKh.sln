@@ -1,4 +1,4 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32203.90
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -225,6 +225,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Graphical tool tests", "Graphical tool tests", "{EC12F6FC-5753-430C-AE13-09EFD219E432}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenKh.Tests.ModsManager", "OpenKh.Tests.ModsManager\OpenKh.Tests.ModsManager.csproj", "{788CDE3D-77D8-4910-8D1A-C829EFD591D2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenKh.Godot", "OpenKh.Godot\OpenKh.Godot.csproj", "{8222BC82-8D60-4146-AFFC-50B6E4CA46BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -912,6 +914,14 @@ Global
 		{788CDE3D-77D8-4910-8D1A-C829EFD591D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{788CDE3D-77D8-4910-8D1A-C829EFD591D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{788CDE3D-77D8-4910-8D1A-C829EFD591D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8222BC82-8D60-4146-AFFC-50B6E4CA46BF}..NET Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8222BC82-8D60-4146-AFFC-50B6E4CA46BF}..NET Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8222BC82-8D60-4146-AFFC-50B6E4CA46BF}..NET Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{8222BC82-8D60-4146-AFFC-50B6E4CA46BF}..NET Release|Any CPU.Build.0 = Debug|Any CPU
+		{8222BC82-8D60-4146-AFFC-50B6E4CA46BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8222BC82-8D60-4146-AFFC-50B6E4CA46BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8222BC82-8D60-4146-AFFC-50B6E4CA46BF}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{8222BC82-8D60-4146-AFFC-50B6E4CA46BF}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

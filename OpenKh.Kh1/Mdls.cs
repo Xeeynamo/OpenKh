@@ -2,8 +2,7 @@ using OpenKh.Common;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Imaging;
+using IronSoftware.Drawing;
 using System.IO;
 using Xe.BinaryMapper;
 
@@ -25,8 +24,8 @@ namespace OpenKh.Kh1
 
         public Mdls(string filepath)
         {
-            int imageCount = 0;
-            using (FileStream stream = new FileStream(filepath, FileMode.Open))
+            var imageCount = 0;
+            using (var stream = new FileStream(filepath, FileMode.Open))
             {
                 //uint tess = testing(0x8B8B8B8A);
 
@@ -37,7 +36,7 @@ namespace OpenKh.Kh1
                     throw new Exception("Invalid file!");
                 }
 
-                int dataSize = stream.ReadInt32(); // Unused for now
+                var dataSize = stream.ReadInt32(); // Unused for now
 
                 // Header
                 Header = BinaryMapping.ReadObject<MdlsHeader>(stream);
@@ -46,9 +45,9 @@ namespace OpenKh.Kh1
 
                 // Mesh headers
                 Meshes = new List<MdlsMesh>();
-                for (int i = 0; i < ModelHeader.MeshCount; i++)
+                for (var i = 0; i < ModelHeader.MeshCount; i++)
                 {
-                    MdlsMesh mesh = new MdlsMesh();
+                    var mesh = new MdlsMesh();
                     mesh.Header = BinaryMapping.ReadObject<MdlsMeshHeader>(stream);
                     Meshes.Add(mesh);
                 }
@@ -58,21 +57,21 @@ namespace OpenKh.Kh1
                 // Joints
                 Joints = new List<MdlsJoint>();
                 stream.Position = INITIAL_ADDRESS + Header.ModelOffset + ModelHeader.JointInfoOffset;
-                for (int i = 0; i < ModelHeader.JointCount; i++)
+                for (var i = 0; i < ModelHeader.JointCount; i++)
                 {
-                    MdlsJoint joint = BinaryMapping.ReadObject<MdlsJoint>(stream);
+                    var joint = BinaryMapping.ReadObject<MdlsJoint>(stream);
                     Joints.Add(joint);
                 }
 
                 // Mesh data
-                for (int i = 0; i < ModelHeader.MeshCount; i++)
+                for (var i = 0; i < ModelHeader.MeshCount; i++)
                 {
-                    int meshDataOffset = INITIAL_ADDRESS + Header.ModelOffset + Meshes[i].Header.MeshPacketOffset;
+                    var meshDataOffset = INITIAL_ADDRESS + Header.ModelOffset + Meshes[i].Header.MeshPacketOffset;
                     stream.Position = meshDataOffset;
-                    int nextOffset = INITIAL_ADDRESS + Header.UnkOffset;
+                    var nextOffset = INITIAL_ADDRESS + Header.UnkOffset;
                     if(i + 1 < ModelHeader.MeshCount)
                         nextOffset = INITIAL_ADDRESS + Header.ModelOffset + Meshes[i+1].Header.MeshPacketOffset;
-                    int packetSize = nextOffset - meshDataOffset;
+                    var packetSize = nextOffset - meshDataOffset;
 
                     Meshes[i].packet = new MdlsMeshPacket();
                     Meshes[i].packet.RawData = stream.ReadBytes(packetSize);
@@ -83,32 +82,32 @@ namespace OpenKh.Kh1
                 Images = new List<MdlsImage>();
                 imageCount = Header.TextureInfoSize / 0x10;
                 stream.Position = INITIAL_ADDRESS + Header.TextureInfoOffset;
-                for (int i = 0; i < imageCount; i++)
+                for (var i = 0; i < imageCount; i++)
                 {
-                    MdlsImage image = new MdlsImage();
+                    var image = new MdlsImage();
                     image.Info = BinaryMapping.ReadObject<MdlsImage.MdlsImageInfo>(stream);
                     Images.Add(image);
                 }
                 stream.Position = INITIAL_ADDRESS + Header.TextureDataOffset;
-                for (int i = 0; i < imageCount; i++)
+                for (var i = 0; i < imageCount; i++)
                 {
-                    int imageDataLength = Images[i].Info.Width * Images[i].Info.Height;
+                    var imageDataLength = Images[i].Info.Width * Images[i].Info.Height;
                     Images[i].Data = stream.ReadBytes(imageDataLength);
                 }
-                for (int i = 0; i < imageCount; i++)
+                for (var i = 0; i < imageCount; i++)
                 {
                     Images[i].Clut = stream.ReadBytes(CLUT_SIZE);
                 }
             }
 
-            string directory = Path.GetDirectoryName(filepath);
-            for (int i = 0; i < imageCount; i++)
+            var directory = Path.GetDirectoryName(filepath);
+            for (var i = 0; i < imageCount; i++)
             {
                 //Images[i].printClut();
 
                 Images[i].loadBitmap();
 
-                string outPath = Path.Combine(directory, "TEXTURE_"+i+".png");
+                var outPath = Path.Combine(directory, "TEXTURE_"+i+".png");
                 //string outPath = Path.Combine(directory, "TEXTURE_"+i+".bmp");
                 //Images[i].bitmap.Save(outPath, ImageFormat.Png);
                 //MdlsImage.CreateAndSavePng(Images[i].Data, Images[i].Clut, Images[i].Width, Images[i].Height, outPath);
@@ -165,12 +164,12 @@ namespace OpenKh.Kh1
                 get
                 {
                     uint mask = 0x000003FF; // 0b00000000000000000000001111111111;
-                    uint ret = HierarchyBitfield & mask;
+                    var ret = HierarchyBitfield & mask;
                     return ret;
                 }
                 set {
-                    uint mask = 0xFFFFFC00; // 0b11111111111111111111110000000000;
-                    uint wihtoutValue = HierarchyBitfield & mask;
+                    var mask = 0xFFFFFC00; // 0b11111111111111111111110000000000;
+                    var wihtoutValue = HierarchyBitfield & mask;
                     HierarchyBitfield = wihtoutValue + value;
                 }
             }
@@ -240,20 +239,20 @@ namespace OpenKh.Kh1
                 TriangleStrips = new List<List<MdlsVertex>>();
                 Vertices = new List<MdlsVertex>();
                 Faces = new List<int[]>();
-                using (MemoryStream stream = new MemoryStream(RawData))
+                using (var stream = new MemoryStream(RawData))
                 {
-                    int[] weightMatrix = new int[16];
+                    var weightMatrix = new int[16];
                     while (stream.Position < RawData.Length)
                     {
-                        MdlsMeshSubPacketHeader header = BinaryMapping.ReadObject<MdlsMeshSubPacketHeader>(stream);
+                        var header = BinaryMapping.ReadObject<MdlsMeshSubPacketHeader>(stream);
 
                         while(stream.PeekInt32() != 0x00008000)
                         {
-                            int subPacketType = stream.PeekInt32();
+                            var subPacketType = stream.PeekInt32();
                             // Weight matrix definition
                             if (subPacketType == 0)
                             {
-                                MdlsPacketMatrixPointer matrixPointer = BinaryMapping.ReadObject<MdlsPacketMatrixPointer>(stream);
+                                var matrixPointer = BinaryMapping.ReadObject<MdlsPacketMatrixPointer>(stream);
                                 if (matrixPointer.TableIndex1 == 0)
                                 {
                                     weightMatrix[matrixPointer.TableIndex0] = matrixPointer.JointId;
@@ -267,12 +266,12 @@ namespace OpenKh.Kh1
                             // Triangle strip
                             else if (subPacketType == 1)
                             {
-                                MdlsPacketVertices vertices = BinaryMapping.ReadObject<MdlsPacketVertices>(stream);
+                                var vertices = BinaryMapping.ReadObject<MdlsPacketVertices>(stream);
                                 StripHeaders.Add(vertices);
-                                List<MdlsVertex> stripVertices = new List<MdlsVertex>();
-                                for (int i = 0; i < vertices.VertexCount; i++)
+                                var stripVertices = new List<MdlsVertex>();
+                                for (var i = 0; i < vertices.VertexCount; i++)
                                 {
-                                    MdlsVertex vertex = BinaryMapping.ReadObject<MdlsVertex>(stream);
+                                    var vertex = BinaryMapping.ReadObject<MdlsVertex>(stream);
                                     vertex.Index = Vertices.Count;
                                     vertex.JointId = weightMatrix[vertex.MatrixId];
                                     Vertices.Add(vertex);
@@ -399,7 +398,7 @@ namespace OpenKh.Kh1
             public byte[] Clut { get; set; }
             public int Width { get { return Info.Width ; } }
             public int Height { get { return Info.Height; } }
-            public Bitmap bitmap { get; set; }
+            public AnyBitmap bitmap { get; set; }
 
             public void loadBitmap()
             {
@@ -413,13 +412,13 @@ namespace OpenKh.Kh1
                     throw new ArgumentException("Image data length or CLUT length is invalid");
                 }
 
-                bitmap = new Bitmap(Width, Height, PixelFormat.Format32bppArgb);
+                bitmap = new AnyBitmap(Width, Height/*, PixelFormat.Format32bppArgb*/);
 
-                for (int y = 0; y < Height; y++)
+                for (var y = 0; y < Height; y++)
                 {
-                    for (int x = 0; x < Width; x++)
+                    for (var x = 0; x < Width; x++)
                     {
-                        byte pixelValue = Data[y * Width + x];
+                        var pixelValue = Data[y * Width + x];
 
                         pixelValue = IndexFix(pixelValue);
 
@@ -428,7 +427,7 @@ namespace OpenKh.Kh1
                             Debug.Write("[" + x + "|" + y + "] ["+ pixelValue + "] ");
                         }
 
-                        Color pixelColor = GetColorFromCLUT(Clut, pixelValue);
+                        var pixelColor = GetColorFromCLUT(Clut, pixelValue);
 
                         bitmap.SetPixel(x, y, pixelColor);
                     }
@@ -447,15 +446,15 @@ namespace OpenKh.Kh1
                     throw new ArgumentException("Image data length or CLUT length is invalid");
                 }
 
-                bitmap = new Bitmap(Width, Height, PixelFormat.Format32bppArgb);
+                bitmap = new AnyBitmap(Width, Height/*, PixelFormat.Format32bppArgb*/);
 
-                using (MemoryStream stream = new MemoryStream(Data))
+                using (var stream = new MemoryStream(Data))
                 {
-                    for (int y = 0; y < Height; y++)
+                    for (var y = 0; y < Height; y++)
                     {
-                        for (int x = 0; x < Width; x += 4)
+                        for (var x = 0; x < Width; x += 4)
                         {
-                            int pixelIndex = stream.ReadInt32();
+                            var pixelIndex = stream.ReadInt32();
 
                             if ((pixelIndex & 31) >= 8)
                             {
@@ -471,11 +470,11 @@ namespace OpenKh.Kh1
 
                             pixelIndex <<= 2;
 
-                            byte[] pixelGroup = BitConverter.GetBytes(pixelIndex);
-                            Color pixel1 = GetColorFromCLUT(Clut, pixelGroup[0]);
-                            Color pixel2 = GetColorFromCLUT(Clut, pixelGroup[1]);
-                            Color pixel3 = GetColorFromCLUT(Clut, pixelGroup[2]);
-                            Color pixel4 = GetColorFromCLUT(Clut, pixelGroup[3]);
+                            var pixelGroup = BitConverter.GetBytes(pixelIndex);
+                            var pixel1 = GetColorFromCLUT(Clut, pixelGroup[0]);
+                            var pixel2 = GetColorFromCLUT(Clut, pixelGroup[1]);
+                            var pixel3 = GetColorFromCLUT(Clut, pixelGroup[2]);
+                            var pixel4 = GetColorFromCLUT(Clut, pixelGroup[3]);
 
                             bitmap.SetPixel(x, y, pixel1);
                             bitmap.SetPixel(x + 1, y, pixel2);
@@ -488,9 +487,9 @@ namespace OpenKh.Kh1
 
             public void printClut()
             {
-                for(int i = 0; i < 256; i ++)
+                for(var i = 0; i < 256; i ++)
                 {
-                    byte[] temp = new byte[4];
+                    var temp = new byte[4];
                     temp[0] = Clut[i*4];
                     temp[1] = Clut[i*4 + 1];
                     temp[2] = Clut[i*4 + 2];
@@ -548,23 +547,23 @@ namespace OpenKh.Kh1
 
             private static Color GetColorFromCLUT(byte[] clut, int index)
             {
-                int start = index * 4;
-                byte red = clut[start];
-                byte green = clut[start + 1];
-                byte blue = clut[start + 2];
+                var start = index * 4;
+                var red = clut[start];
+                var green = clut[start + 1];
+                var blue = clut[start + 2];
                 //byte alpha = (byte)(clut[start + 3] / 2);
                 //byte alpha = clut[start + 3];
                 //byte alpha = (byte)(255 - clut[start + 3]);
-                byte alpha = (byte)((clut[start + 3] * 0xFF) >> 7);
+                var alpha = (byte)((clut[start + 3] * 0xFF) >> 7);
 
-                Color color = Color.FromArgb(alpha, red, green, blue);
+                var color = Color.FromArgb(alpha, red, green, blue);
 
                 return color;
             }
 
             private static string getColorAsHex(Color color)
             {
-                byte[] byteArray = new byte[4];
+                var byteArray = new byte[4];
                 byteArray[0] = color.R;
                 byteArray[1] = color.G;
                 byteArray[2] = color.B;

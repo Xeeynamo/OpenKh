@@ -68,7 +68,13 @@ namespace OpenKh.Egs
 
         #region Extract
 
-        public static void Extract(string inputHed, string output, bool doNotExtractAgain = false)
+        public enum ExtractFileOutputMode
+        {
+            SeparateRoot,
+            Adjacent,
+        }
+
+        public static void Extract(string inputHed, string output, bool doNotExtractAgain = false, ExtractFileOutputMode outputMode = ExtractFileOutputMode.SeparateRoot)
         {
             var outputDir = output ?? Path.GetFileNameWithoutExtension(inputHed);
             using var hedStream = File.OpenRead(inputHed);
@@ -80,7 +86,11 @@ namespace OpenKh.Egs
                 if (!Names.TryGetValue(hash, out var fileName))
                     fileName = $"{hash}.dat";
 
-                var outputFileName = Path.Combine(outputDir, ORIGINAL_FILES_FOLDER_NAME, fileName);
+                var outputFileName = outputMode switch
+                {
+                    ExtractFileOutputMode.Adjacent => Path.Combine(outputDir, fileName),
+                    _ => Path.Combine(outputDir, ORIGINAL_FILES_FOLDER_NAME, fileName),
+                };
 
                 if (doNotExtractAgain && File.Exists(outputFileName))
                     continue;
@@ -92,7 +102,11 @@ namespace OpenKh.Egs
 
                 File.Create(outputFileName).Using(stream => stream.Write(hdAsset.OriginalData));
 
-                outputFileName = Path.Combine(outputDir, REMASTERED_FILES_FOLDER_NAME, fileName);
+                outputFileName = outputMode switch
+                {
+                    ExtractFileOutputMode.Adjacent => Path.Combine(outputDir, $"{fileName}.remastered.d"),
+                    _ => Path.Combine(outputDir, REMASTERED_FILES_FOLDER_NAME, fileName),
+                };
 
                 foreach (var asset in hdAsset.Assets)
                 {
