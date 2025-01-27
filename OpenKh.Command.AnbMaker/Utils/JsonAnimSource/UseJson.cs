@@ -12,9 +12,9 @@ namespace OpenKh.Command.AnbMaker.Utils.JsonAnimSource
 
         public UseJson(
             string inputModel,
-            string meshName,
-            string rootName,
-            string animationName,
+            string? meshName,
+            string? rootName,
+            string? animationName,
             float nodeScaling
         )
         {
@@ -29,6 +29,11 @@ namespace OpenKh.Command.AnbMaker.Utils.JsonAnimSource
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 }
             );
+
+            if (model == null)
+            {
+                throw new NullReferenceException("model");
+            }
 
             if (model.Version != "1")
             {
