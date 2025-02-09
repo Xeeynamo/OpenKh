@@ -10,9 +10,9 @@ namespace OpenKh.Command.AnbMaker.Utils.AssimpAnimSource
 
         public UseAssimp(
             string inputModel,
-            string meshName,
-            string rootName,
-            string animationName,
+            string? meshName,
+            string? rootName,
+            string? animationName,
             float nodeScaling,
             float positionScaling
         )

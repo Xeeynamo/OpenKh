@@ -40,7 +40,7 @@ namespace OpenKh.Command.AnbMaker.Utils
             return list.ToArray();
         }
 
-        public static Node FindRootBone(Node rootNode, string rootName)
+        public static Node FindRootBone(Node rootNode, string? rootName)
         {
             rootName = rootName ?? "bone000";
 

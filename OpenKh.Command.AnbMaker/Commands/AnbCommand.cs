@@ -21,16 +21,16 @@ namespace OpenKh.Command.AnbMaker.Commands
         [Required]
         [FileExists]
         [Argument(0, Description = "fbx input")]
-        public string InputModel { get; set; }
+        public string InputModel { get; set; } = null!;
 
         [Argument(1, Description = "anb output")]
-        public string Output { get; set; }
+        public string? Output { get; set; }
 
         [Option(Description = "specify root armature node name", ShortName = "r")]
-        public string RootName { get; set; }
+        public string? RootName { get; set; }
 
         [Option(Description = "specify mesh name to read bone data", ShortName = "m")]
-        public string MeshName { get; set; }
+        public string? MeshName { get; set; }
 
         [Option(Description = "apply scaling to each source node", ShortName = "x", LongName = "node-scaling")]
         public float NodeScaling { get; set; } = 1;
@@ -39,10 +39,10 @@ namespace OpenKh.Command.AnbMaker.Commands
         public float PositionScaling { get; set; } = 1;
 
         [Option(Description = "specify animation name to read bone data", ShortName = "a")]
-        public string AnimationName { get; set; }
+        public string? AnimationName { get; set; }
 
         [Option(Description = "optionally inject new motion into mset directly", ShortName = "w")]
-        public string MsetFile { get; set; }
+        public string? MsetFile { get; set; }
 
         [Option(Description = "zero based target index of bar entry in mset file", ShortName = "i")]
         public int MsetIndex { get; set; }
@@ -107,9 +107,9 @@ namespace OpenKh.Command.AnbMaker.Commands
 
             public UseAssimpForRaw(
                 string inputModel,
-                string meshName,
-                string rootName,
-                string animationName,
+                string? meshName,
+                string? rootName,
+                string? animationName,
                 float nodeScaling,
                 float positionScaling
             )
