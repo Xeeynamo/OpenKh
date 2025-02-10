@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://o5m6y4dntncp"]
+
+[ext_resource type="Script" path="res://Test/TestAssetExtractor.cs" id="1_y7kp3"]
+
+[node name="ImportTest" type="Node3D"]
+
+[node name="Node" type="Node" parent="."]
+script = ExtResource("1_y7kp3")

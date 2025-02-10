@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Drawing.Common" Version="8.0.4" />
-    <PackageReference Include="Xe.BinaryMapper" Version="1.5.2" />
+      <PackageReference Include="IronSoftware.System.Drawing" Version="2024.8.1" />
+      <PackageReference Include="Xe.BinaryMapper" Version="1.5.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,12 +20,6 @@
     <None Update="resources\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-      <Reference Include="PresentationCore" />
-      <Reference Include="PresentationFramework" />
-      <Reference Include="WindowsBase" />
   </ItemGroup>
 
 </Project>

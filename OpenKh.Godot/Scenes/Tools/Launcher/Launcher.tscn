@@ -1,0 +1,31 @@
+[gd_scene load_steps=2 format=3 uid="uid://pdwj5kona0kg"]
+
+[ext_resource type="PackedScene" uid="uid://cv6fpnmhhenwc" path="res://Scenes/Tools/Launcher/GameConfigurator.tscn" id="1_yxu03"]
+
+[node name="Launcher" type="PanelContainer"]
+
+[node name="Configurator" type="PanelContainer" parent="."]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Configurator"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Configurator/HBoxContainer"]
+layout_mode = 2
+
+[node name="HDRemix" parent="Configurator/HBoxContainer/VBoxContainer" instance=ExtResource("1_yxu03")]
+layout_mode = 2
+GameIdentifier = "HDRemix"
+LabelText = "HD 1.5+2.5 ReMIX"
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="Configurator/HBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Configurator/HBoxContainer/VBoxContainer2"]
+layout_mode = 2
+text = "Tools"
+horizontal_alignment = 1
+
+[node name="Button" type="Button" parent="Configurator/HBoxContainer/VBoxContainer2"]
+layout_mode = 2
+text = "Explorer"

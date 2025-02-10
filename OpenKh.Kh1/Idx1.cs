@@ -12,7 +12,7 @@ namespace OpenKh.Kh1
     {
         public const int EntryLength = 0x10;
         public const int MaxItemCount = 0xE00;
-        public const int kingdomimg = 0x4d7000 / 0x800;
+        public const int KingdomImg = 0x4d7000 / 0x800;
 
         [Data] public uint Hash { get; set; }
         [Data] public uint CompressionFlag { get; set; }
@@ -41,15 +41,7 @@ namespace OpenKh.Kh1
                 stream.SetLength(stream.Position);
         }
 
-        public static uint GetHash(string text) =>
-            GetHash(Encoding.UTF8.GetBytes(text));
-        public static uint GetHash(byte[] data)
-        {
-            var hash = 0U;
-            foreach (var ch in data)
-                hash = (2 * hash) ^ (uint)((ch << 16) % 69665);
-
-            return hash;
-        }
+        public static uint GetHash(string text) => GetHash(Encoding.UTF8.GetBytes(text));
+        public static uint GetHash(byte[] data) => data.Aggregate(0U, (current, ch) => (2 * current) ^ (uint)((ch << 16) % 69665));
     }
 }

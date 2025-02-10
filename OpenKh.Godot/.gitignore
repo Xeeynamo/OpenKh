@@ -1,0 +1,20 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+# Jetbrains
+.idea/
+
+# Kingdom Hearts extracted and imported assets
+
+Extracted/
+
+Imported/**/*.mdlx
+Imported/**/*.mdls
+Imported/**/*.mset
+Imported/**/*.dds
+Imported/**/*.scd
+Imported/**/*.map
+Imported/**/*.png
+Imported/**/*.2dd
+Imported/**/*.2ld

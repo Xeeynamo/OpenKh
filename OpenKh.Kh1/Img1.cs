@@ -40,11 +40,10 @@ namespace OpenKh.Kh1
 
         public bool FileOpen(string fileName, Action<Stream> callback)
         {
-            bool result;
-            if (result = Entries.TryGetValue(fileName, out var entry))
-                callback(FileOpen(entry));
-
-            return result;
+            if (!Entries.TryGetValue(fileName, out var entry)) return false;
+            
+            callback(FileOpen(entry));
+            return true;
         }
 
         public Stream FileOpen(string fileName)
@@ -66,10 +65,7 @@ namespace OpenKh.Kh1
             return new SubStream(_stream, (_firstBlock + entry.IsoBlock) * IsoBlockAlign, entry.Length);
         }
 
-        public static byte[] Decompress(Stream src)
-        {
-            return Decompress(new BinaryReader(src).ReadBytes((int)src.Length));
-        }
+        public static byte[] Decompress(Stream src) => Decompress(new BinaryReader(src).ReadBytes((int)src.Length));
 
         public static byte[] Decompress(byte[] srcData)
         {
@@ -83,7 +79,7 @@ namespace OpenKh.Kh1
                 (srcData[srcIndex--] << 8) |
                 (srcData[srcIndex--] << 16);
 
-            int dstIndex = decSize - 1;
+            var dstIndex = decSize - 1;
             var dstData = new byte[decSize];
             while (dstIndex >= 0 && srcIndex >= 0)
             {
@@ -94,7 +90,7 @@ namespace OpenKh.Kh1
                     if (copyIndex > 0 && srcIndex >= 0)
                     {
                         var copyLength = srcData[srcIndex--];
-                        for (int i = 0; i < copyLength + 3 && dstIndex >= 0; i++)
+                        for (var i = 0; i < copyLength + 3 && dstIndex >= 0; i++)
                         {
                             if (dstIndex + copyIndex + 1 < dstData.Length)
                                 dstData[dstIndex--] = dstData[dstIndex + copyIndex + 1];
@@ -103,15 +99,11 @@ namespace OpenKh.Kh1
                         }
                     }
                     else
-                    {
                         dstData[dstIndex--] = data;
-                    }
 
                 }
                 else
-                {
                     dstData[dstIndex--] = data;
-                }
             }
 
             return dstData;
@@ -124,14 +116,15 @@ namespace OpenKh.Kh1
 
             var decompressedLength = srcData.Length;
             var key = GetLeastUsedByte(srcData);
-            var buffer = new List<byte>(decompressedLength);
+            var buffer = new List<byte>(decompressedLength)
+            {
+                key,
+                (byte)(decompressedLength >> 0),
+                (byte)(decompressedLength >> 8),
+                (byte)(decompressedLength >> 16),
+            };
 
-            buffer.Add(key);
-            buffer.Add((byte)(decompressedLength >> 0));
-            buffer.Add((byte)(decompressedLength >> 8));
-            buffer.Add((byte)(decompressedLength >> 16));
-
-            int sourceIndex = decompressedLength - 1;
+            var sourceIndex = decompressedLength - 1;
 
             while (sourceIndex >= 0)
             {
@@ -183,10 +176,7 @@ namespace OpenKh.Kh1
 
             var compressedLength = buffer.Count;
             var cmp = new byte[compressedLength];
-            for (var i = 0; i < compressedLength; i++)
-            {
-                cmp[i] = buffer[compressedLength - i - 1];
-            }
+            for (var i = 0; i < compressedLength; i++) cmp[i] = buffer[compressedLength - i - 1];
 
             return cmp;
         }

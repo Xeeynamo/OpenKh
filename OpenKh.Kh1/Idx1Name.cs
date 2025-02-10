@@ -7,8 +7,8 @@ namespace OpenKh.Kh1
 {
     public record Idx1Name
     {
-        public static string[] Names = File.ReadAllLines(Path.Combine(AppContext.BaseDirectory, "resources/kh1idx.txt"));
-        private static Dictionary<uint, string> _nameDictionary = Names.ToDictionary(name => Idx1.GetHash(name), name => name);
+        public static readonly string[] Names = File.ReadAllLines(Path.Combine(AppContext.BaseDirectory, "resources/kh1idx.txt"));
+        private static readonly Dictionary<uint, string> NameDictionary = Names.ToDictionary(Idx1.GetHash, name => name);
 
         public Idx1 Entry { get; set; }
         public string Name { get; set; }
@@ -20,7 +20,6 @@ namespace OpenKh.Kh1
                 Name = Lookup(entry)
             });
 
-        public static string Lookup(Idx1 entry) =>
-            _nameDictionary.TryGetValue(entry.Hash, out var name) ? name : null;
+        public static string Lookup(Idx1 entry) => NameDictionary.GetValueOrDefault(entry.Hash);
     }
 }

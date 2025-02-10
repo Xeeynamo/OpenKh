@@ -1,0 +1,109 @@
+[gd_scene load_steps=3 format=3 uid="uid://bcocer1uwxjiq"]
+
+[ext_resource type="Script" path="res://Tools/KHExplorer/ScdViewer.cs" id="1_eo6tx"]
+[ext_resource type="Script" path="res://Tools/KHExplorer/AudioVisualizer.cs" id="2_4pm6i"]
+
+[node name="ScdViewer" type="PanelContainer" node_paths=PackedStringArray("IndexDropdown", "PlayButton", "PauseButton", "StopButton", "VolumeSlider", "ProgressSlider", "LoopButton", "MetadataLabel", "ProgressFrontLabel", "ProgressBackLabel", "Visualizer")]
+script = ExtResource("1_eo6tx")
+IndexDropdown = NodePath("MarginContainer/VBoxContainer/HBoxContainer/IndexOption")
+PlayButton = NodePath("MarginContainer/VBoxContainer/HBoxContainer/PlayButton")
+PauseButton = NodePath("MarginContainer/VBoxContainer/HBoxContainer/PauseButton")
+StopButton = NodePath("MarginContainer/VBoxContainer/HBoxContainer/StopButton")
+VolumeSlider = NodePath("MarginContainer/VBoxContainer/HBoxContainer/VolumeBar")
+ProgressSlider = NodePath("MarginContainer/VBoxContainer/HBoxContainer2/PlaybackBar")
+LoopButton = NodePath("MarginContainer/VBoxContainer/HBoxContainer/LoopButton")
+MetadataLabel = NodePath("MarginContainer/VBoxContainer/MetadataLabel")
+ProgressFrontLabel = NodePath("MarginContainer/VBoxContainer/HBoxContainer2/FrontLabel")
+ProgressBackLabel = NodePath("MarginContainer/VBoxContainer/HBoxContainer2/BackLabel")
+Visualizer = NodePath("MarginContainer/VBoxContainer/PanelContainer/AudioVisualizer")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 256)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="AudioVisualizer" type="Control" parent="MarginContainer/VBoxContainer/PanelContainer"]
+layout_mode = 2
+script = ExtResource("2_4pm6i")
+
+[node name="HSeparator3" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="IndexOption" type="OptionButton" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="PlayButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = " ⏵ "
+
+[node name="PauseButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = " ⏸ "
+
+[node name="StopButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = " ⏹ "
+
+[node name="VSeparator" type="VSeparator" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="VolumeBar" type="HSlider" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(128, 0)
+layout_mode = 2
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+tick_count = 5
+ticks_on_borders = true
+
+[node name="VSeparator2" type="VSeparator" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="LoopButton" type="CheckBox" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "🔁"
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="FrontLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+text = "00:00"
+
+[node name="PlaybackBar" type="HSlider" parent="MarginContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+step = 0.0
+tick_count = 2
+ticks_on_borders = true
+
+[node name="BackLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+text = "00:00"
+
+[node name="HSeparator2" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="MetadataLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Length: {} Sample Rate: {} Codec: {}
+Loop Start: {} Loop End: {}
+"

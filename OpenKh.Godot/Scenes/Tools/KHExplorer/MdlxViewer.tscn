@@ -1,0 +1,84 @@
+[gd_scene load_steps=2 format=3 uid="uid://bop66gxvgp0vc"]
+
+[ext_resource type="Script" path="res://Tools/KHExplorer/MdlxViewer.cs" id="1_0vaws"]
+
+[node name="MdlxViewer" type="PanelContainer" node_paths=PackedStringArray("SubViewport", "ModelParent", "Camera", "TexturePanel", "AnimatedTexturePanel", "RemasteredToggle")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_0vaws")
+SubViewport = NodePath("VBoxContainer/VSplitContainer/PanelContainer/SubViewportContainer/SubViewport")
+ModelParent = NodePath("VBoxContainer/VSplitContainer/PanelContainer/SubViewportContainer/SubViewport/ModelParent")
+Camera = NodePath("VBoxContainer/VSplitContainer/PanelContainer/SubViewportContainer/SubViewport/Camera3D")
+TexturePanel = NodePath("VBoxContainer/VSplitContainer/TabContainer/Textures")
+AnimatedTexturePanel = NodePath("VBoxContainer/VSplitContainer/TabContainer/Animated Textures")
+RemasteredToggle = NodePath("VBoxContainer/VSplitContainer/PanelContainer/MarginContainer/RemasteredButton")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="VSplitContainer" type="VSplitContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PanelContainer" type="PanelContainer" parent="VBoxContainer/VSplitContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="VBoxContainer/VSplitContainer/PanelContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="VBoxContainer/VSplitContainer/PanelContainer/SubViewportContainer"]
+handle_input_locally = false
+size = Vector2i(1152, 318)
+render_target_update_mode = 4
+
+[node name="ModelParent" type="Node3D" parent="VBoxContainer/VSplitContainer/PanelContainer/SubViewportContainer/SubViewport"]
+
+[node name="Camera3D" type="Camera3D" parent="VBoxContainer/VSplitContainer/PanelContainer/SubViewportContainer/SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.23077)
+
+[node name="test" type="Label3D" parent="VBoxContainer/VSplitContainer/PanelContainer/SubViewportContainer/SubViewport"]
+transform = Transform3D(2.76655, -2.1048, 1.9789, 1.71192, 3.40145, 1.22453, -2.32713, 0, 3.25338, 0, 0, 0)
+text = "fuck"
+outline_size = 2
+autowrap_mode = 3
+justification_flags = 161
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/VSplitContainer/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="ModelInfoLabel" type="Label" parent="VBoxContainer/VSplitContainer/PanelContainer/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+text = "Vertices: "
+
+[node name="RemasteredButton" type="CheckButton" parent="VBoxContainer/VSplitContainer/PanelContainer/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+button_pressed = true
+text = "Remastered"
+
+[node name="TabContainer" type="TabContainer" parent="VBoxContainer/VSplitContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+current_tab = 0
+
+[node name="Textures" type="TabContainer" parent="VBoxContainer/VSplitContainer/TabContainer"]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="Animated Textures" type="TabContainer" parent="VBoxContainer/VSplitContainer/TabContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
